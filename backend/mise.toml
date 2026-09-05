@@ -1,0 +1,27 @@
+[tools]
+go = "1.27.1"
+golangci-lint = "2.13.2"
+air = "1.67.4"
+gotestsum = "1.13.0"
+"go:github.com/go-delve/delve/cmd/dlv" = "latest"
+"go:github.com/swaggo/swag/cmd/swag" = "latest"
+
+[tasks.install]
+description = "Download Go modules"
+run = "go mod download"
+
+[tasks.dev]
+description = "Run API server"
+run = "air"
+
+[tasks.test]
+description = "Run backend tests"
+run = "go test ./..."
+
+[tasks.lint]
+description = "Run lint"
+run = "golangci-lint run ./..."
+
+[tasks.lint-fix]
+description = "Run lint"
+run = "golangci-lint run ./... --fix"

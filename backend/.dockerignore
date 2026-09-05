@@ -1,0 +1,9 @@
+.git
+.github
+docs/
+migrations/
+scripts/
+mise.toml
+README.md
+*.md
+.env*
