@@ -5,6 +5,8 @@ air = "1.67.4"
 gotestsum = "1.13.0"
 "go:github.com/go-delve/delve/cmd/dlv" = "latest"
 "go:github.com/swaggo/swag/cmd/swag" = "latest"
+"go:github.com/sqlc-dev/sqlc/cmd/sqlc" = "latest"
+"go:github.com/pressly/goose/v3/cmd/goose" = "latest"
 
 [tasks.install]
 description = "Download Go modules"
@@ -17,6 +19,14 @@ run = "air"
 [tasks.test]
 description = "Run backend tests"
 run = "go test ./..."
+
+[tasks."generate:docs"]
+description = "Generate Swagger Docs"
+run = "swag init -g cmd/api/main.go"
+
+[tasks."generate:db"]
+description = "Generate Query"
+run = "sqlc generate"
 
 [tasks.lint]
 description = "Run lint"

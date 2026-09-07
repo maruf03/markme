@@ -6,7 +6,7 @@ root = "."
 [build]
   args_bin = []
   bin = "./tmp/api"
-  cmd = "go build -o ./tmp/api cmd/api/main.go"
+  cmd = "CGO_ENABLED=0 go build -o ./tmp/api cmd/api/main.go"
   delay = 1000
   entrypoint = ["./tmp/api"]
   exclude_dir = ["tmp", "bin", "build", "scripts", "migrations", "docs"]

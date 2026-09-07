@@ -1,0 +1,42 @@
+version: "2"
+sql:
+  # 1. Global / Shared Layer
+  - engine: "postgresql"
+    schema: "migrations"
+    queries: "internal/db/queries.sql"
+    gen:
+      go:
+        package: "db"
+        out: "internal/db/gen"
+        sql_package: "pgx/v5"
+
+  # 2. User Domain Layer
+  - engine: "postgresql"
+    schema: "migrations"
+    queries: "internal/user/db/queries.sql"
+    gen:
+      go:
+        package: "userdb"
+        out: "internal/user/db/gen"
+        sql_package: "pgx/v5"
+        overrides:
+          # Re-use models defined in the shared package instead of generating duplicate types
+          - db_type: "users"
+            go_type:
+              import: "github.com/maruf03/markme/backend/internal/db/gen"
+              type: "User"
+
+  # 3. Book Domain Layer
+  - engine: "postgresql"
+    schema: "migrations"
+    queries: "internal/bookmark/db/queries.sql"
+    gen:
+      go:
+        package: "bookmarkdb"
+        out: "internal/bookmark/db/gen"
+        sql_package: "pgx/v5"
+        overrides:
+          - db_type: "bookmarks"
+            go_type:
+              import: "github.com/maruf03/markme/backend/internal/db/gen"
+              type: "Bookmark"
