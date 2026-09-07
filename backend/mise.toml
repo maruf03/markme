@@ -8,7 +8,7 @@ gotestsum = "1.13.0"
 "go:github.com/sqlc-dev/sqlc/cmd/sqlc" = "latest"
 "go:github.com/pressly/goose/v3/cmd/goose" = "latest"
 
-[tasks.install]
+[tasks."install:deps"]
 description = "Download Go modules"
 run = "go mod download"
 
@@ -32,6 +32,6 @@ run = "sqlc generate"
 description = "Run lint"
 run = "golangci-lint run ./..."
 
-[tasks.lint-fix]
+[tasks."lint:fix"]
 description = "Run lint"
 run = "golangci-lint run ./... --fix"
