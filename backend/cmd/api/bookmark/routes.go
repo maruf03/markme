@@ -23,11 +23,11 @@ func NewBookmarkController(
 }
 
 func (b *BookmarkController) RegisterRoutes() {
-	b.routeGroup.GET("/", b.GetAllBookmarks)
-	b.routeGroup.POST("/", b.CreateBookmark)
-	b.routeGroup.GET("/:id", b.GetBookmark)
-	b.routeGroup.PATCH("/:id", b.UpdateBookmark)
-	b.routeGroup.DELETE("/:id", b.DeleteBookmark)
+	b.routeGroup.GET("", b.GetAllBookmarks)
+	b.routeGroup.POST("", b.CreateBookmark)
+	b.routeGroup.GET("/:bookmarkId", b.GetBookmark)
+	b.routeGroup.PATCH("/:bookmarkId", b.UpdateBookmark)
+	b.routeGroup.DELETE("/:bookmarkId", b.DeleteBookmark)
 }
 
 func (b *BookmarkController) GetAllBookmarks(e *echo.Context) error {
