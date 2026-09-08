@@ -3,7 +3,9 @@ package main
 import (
 	"context"
 	"log"
-	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/go-playground/validator/v10"
 	echootel "github.com/labstack/echo-opentelemetry"
@@ -11,12 +13,13 @@ import (
 	"github.com/labstack/echo/v5/middleware"
 	authController "github.com/maruf03/markme/backend/cmd/api/auth"
 	bookmarkController "github.com/maruf03/markme/backend/cmd/api/bookmark"
+	obsController "github.com/maruf03/markme/backend/cmd/api/observability"
 	userController "github.com/maruf03/markme/backend/cmd/api/user"
 	_ "github.com/maruf03/markme/backend/docs"
 	"github.com/maruf03/markme/backend/internal/auth"
 	"github.com/maruf03/markme/backend/internal/bookmark"
+	"github.com/maruf03/markme/backend/internal/observability"
 	"github.com/maruf03/markme/backend/internal/user"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 	echoSwagger "github.com/swaggo/echo-swagger/v2"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/prometheus"
@@ -39,7 +42,8 @@ func (cv *CustomValidator) Validate(i any) error {
 // @version		1.0
 // @description	This is a sample server Petstore server.
 func main() {
-	ctx := context.Background()
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
 
 	// 1. Create the Prometheus OTel exporter
 	exporter, err := prometheus.New()
@@ -72,15 +76,20 @@ func RegisterMiddlewares(e *echo.Echo) {
 	e.Use(middleware.RequestID())
 	e.Use(middleware.RequestLogger())
 	e.Use(middleware.Recover())
-	e.Use(echootel.NewMiddleware("app.example.com"))
+	e.Use(echootel.NewMiddleware("app.example.com")) // TODO: replace with real value
 }
 
 func RegisterRoutes(e *echo.Echo) {
-	e.GET("/livez", livez)
-	e.GET("/healthz", healthz)
-	e.GET("/readyz", readyz)
-	e.GET("/metrics", echo.WrapHandler(promhttp.Handler()))
 	e.GET("/docs/*", echoSwagger.WrapHandler)
+
+	obs_group := e.Group("")
+
+	newObsController := obsController.NewObservabilityController(
+		&observability.ObservabilityService{},
+		obs_group,
+	)
+
+	newObsController.RegisterRoutes()
 
 	v1_group := e.Group("/api/v1")
 
@@ -101,16 +110,4 @@ func RegisterRoutes(e *echo.Echo) {
 		v1_group.Group("/user/:userId/bookmark"),
 	)
 	newBookmarkController.RegisterRoutes()
-}
-
-func livez(c *echo.Context) error {
-	return c.String(http.StatusOK, "OK")
-}
-
-func healthz(c *echo.Context) error {
-	return c.String(http.StatusOK, "OK")
-}
-
-func readyz(c *echo.Context) error {
-	return c.String(http.StatusOK, "OK")
 }
